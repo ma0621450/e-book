@@ -1,0 +1,27 @@
+#root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.postCards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+.author-img {
+    border-radius: 50%;
+}
+.custom-dropdown {
+    width: 400px;
+    overflow-y: auto;
+}
+
+.custom-dropdown .dropdown-item {
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+}
+.dropdown-menu[data-bs-popper] {
+    right: 100px !important;
+    left: -336px !important;
+}
