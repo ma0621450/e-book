@@ -32,7 +32,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->boolean('is_verified')->default(false);
-            $table->longText('bio')->nullable();
+            $table->string('pfp')->nullable();
+            $table->longText('bio');
             $table->timestamps();
         });
 
@@ -40,6 +41,7 @@ return new class extends Migration {
         Schema::create('contents', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('author_id')->nullable()->unsigned();
+            $table->string('cover_img')->nullable();
             $table->string('title')->unique();
             $table->text('body');
             $table->string('type');

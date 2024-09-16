@@ -1,34 +1,45 @@
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "../api/api";
+import { registerUser } from "../api/Api";
 
-const Register = () => {
-  const formRef = useRef();
-  const [errors, setErrors] = useState([]);
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
+interface FormValues {
+  email: string;
+  username: string;
+  password: string;
+  role: string;
+}
+
+const Register: React.FC = () => {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [success, setSuccess] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors([]);
     setLoading(true);
 
-    const formData = {
-      email: formRef.current.email.value,
-      username: formRef.current.username.value,
-      password: formRef.current.password.value,
-      role: formRef.current.role.value,
-    };
+    if (formRef.current) {
+      const formData = new FormData(formRef.current);
 
-    try {
-      await registerUser(formData);
-      setSuccess("User created successfully!");
+      try {
+        await registerUser(formData);
+        setSuccess("User created successfully!");
+        setLoading(false);
+        navigate("/login");
+      } catch (error) {
+        setLoading(false);
+        setErrors([
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+        ]);
+      }
+    } else {
       setLoading(false);
-      navigate("/login");
-    } catch (error) {
-      setLoading(false);
-      setErrors([error.message]);
+      setErrors(["Form reference is not available."]);
     }
   };
 
@@ -36,7 +47,7 @@ const Register = () => {
     <div className="register-page">
       <form
         ref={formRef}
-        className="border border-1 w-50 mx-auto p-3 m-4"
+        className="border border-1 rounded w-50 mx-auto p-3 m-4"
         onSubmit={handleSubmit}
       >
         {success && (

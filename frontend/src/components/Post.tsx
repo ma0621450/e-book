@@ -1,27 +1,56 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
 import { useUser } from "../context/UserContext";
+import { fetchPostbyId } from "../api/Api";
+import { LoadingSpinner } from "./LoadingSpinner";
 
-const Post = () => {
-  const { id } = useParams();
+interface PostAuthor {
+  id: number;
+  user: {
+    username: string;
+  };
+  bio: string;
+}
+
+interface Post {
+  id: number;
+  title: string;
+  body: string;
+  author: PostAuthor;
+}
+
+const Post: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
   const { user } = useUser();
-  const [post, setPost] = useState(null);
+  const [post, setPost] = useState<Post | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPost = async () => {
+      if (!id) {
+        setError("Post ID is missing.");
+        return;
+      }
+
       try {
-        const response = await fetchPost(id);
+        const response = await fetchPostbyId(id);
         setPost(response);
       } catch (error) {
         console.error("Error fetching post:", error);
+        setError("Failed to load post.");
       }
     };
 
     fetchPost();
   }, [id]);
 
-  if (!post) return <p>Loading...</p>;
+  if (error) {
+    return <p>{error}</p>;
+  }
+
+  if (!post) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="post">
@@ -39,7 +68,7 @@ const Post = () => {
             style={{ marginTop: "97px" }}
             className="border border-1 col-3 p-3"
           >
-            <div className="d-flex flex-column ">
+            <div className="d-flex flex-column">
               <p>
                 <b>Author: </b>
                 <span>{post.author.user.username}</span>

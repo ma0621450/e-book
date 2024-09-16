@@ -1,11 +1,24 @@
 import React from "react";
 import { IoNotifications } from "react-icons/io5";
-import { markNotificationAsRead } from "../api/api";
+import { markNotificationAsRead } from "../api/Api";
 
-const HandleNotificationClick = ({ notifications, setNotifications }) => {
-  const handleNotificationClick = async (id) => {
+interface Notification {
+  id: number;
+  message: string;
+}
+
+interface HandleNotificationClickProps {
+  notifications: Notification[];
+  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
+}
+
+const HandleNotificationClick: React.FC<HandleNotificationClickProps> = ({
+  notifications,
+  setNotifications,
+}) => {
+  const handleNotificationClick = async (id: number) => {
     try {
-      await markNotificationAsRead(id);
+      await markNotificationAsRead(id.toString()); // Convert id to string
       setNotifications((prev) =>
         prev.filter((notification) => notification.id !== id)
       );

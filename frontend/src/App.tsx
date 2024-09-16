@@ -5,13 +5,13 @@ import axios from "axios";
 import { useEffect } from "react";
 
 function App() {
-    return (
-        <>
-            <Navbar />
-            <Outlet />
-            <Footer />
-        </>
-    );
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+      <Footer />
+    </>
+  );
 }
 
 export default App;

@@ -26,17 +26,12 @@ class UserController extends Controller
         $content = Content::with([
             'author',
             'author.user' => function ($query) {
-                $query->whereNull('deleted_at'); // Exclude soft-deleted users
+                $query->whereNull('deleted_at');
             }
         ])
             ->where('is_published', true)
             ->whereNotIn('id', $purchasedContentIds)
-            ->get()
-            ->filter(function ($content) {
-                // Ensure the author and user are not null
-                return $content->author && $content->author->user;
-            });
-
+            ->paginate(6);
         return response()->json($content, 200);
     }
 
@@ -132,23 +127,18 @@ class UserController extends Controller
                     'body' => $content->body,
                     'type' => $content->type,
                     'price' => $content->price,
+                    'cover_img' => $content->cover_img,
                     'is_published' => $content->is_published,
-                    'created_at' => $content->created_at->toIso8601String(),
-                    'updated_at' => $content->updated_at->toIso8601String(),
                     'author' => [
                         'id' => $content->author->id,
                         'user_id' => $content->author->user_id,
                         'is_verified' => $content->author->is_verified,
                         'bio' => $content->author->bio,
-                        'created_at' => $content->author->created_at->toIso8601String(),
-                        'updated_at' => $content->author->updated_at->toIso8601String(),
                         'user' => [
                             'id' => $content->author->user->id,
                             'username' => $content->author->user->username,
                             'email' => $content->author->user->email,
                             'role_id' => $content->author->user->role_id,
-                            'created_at' => $content->author->user->created_at->toIso8601String(),
-                            'updated_at' => $content->author->user->updated_at->toIso8601String()
                         ]
                     ]
                 ];
@@ -159,6 +149,15 @@ class UserController extends Controller
         })->filter(); // Remove any null values
 
         return response()->json($formattedContent);
+    }
+    public function hasPurchased($postId)
+    {
+        $userId = Auth::id();
+        $purchased = Purchase::where('user_id', $userId)
+            ->where('id', $postId)
+            ->exists();
+
+        return response()->json(['purchased' => $purchased]);
     }
 
 

@@ -1,13 +1,29 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import GrantAccessModal from "./GrantAcessModal";
-import { togglePublish, getUserIds, grantAccess } from "../api/api";
+import GrantAccessModal from "./GrantAccessModal";
+import { togglePublish, getUserIds, grantAccess } from "../api/Api";
 
-const AuthorPostCard = ({ content, onPublish }) => {
+interface Content {
+  id: number;
+  cover_img: string;
+  title: string;
+  type: string;
+  is_published: boolean;
+}
+
+interface AuthorPostCardProps {
+  content: Content;
+  onPublish: (id: number) => void;
+}
+
+const AuthorPostCard: React.FC<AuthorPostCardProps> = ({
+  content,
+  onPublish,
+}) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [emails, setEmails] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [success, setSuccess] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
 
@@ -16,8 +32,8 @@ const AuthorPostCard = ({ content, onPublish }) => {
   const handleModalClose = () => {
     setModalOpen(false);
     setEmails("");
-    setError("");
-    setSuccess("");
+    setError(undefined);
+    setSuccess(undefined);
   };
 
   const handleTogglePublish = async () => {
@@ -28,16 +44,17 @@ const AuthorPostCard = ({ content, onPublish }) => {
       onPublish(content.id);
     } catch (error) {
       console.error("Error toggling publish status:", error);
+      setError("Failed to toggle publish status.");
     } finally {
       setIsLoading(false);
       setIsPublishing(false);
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
+    setError(undefined);
+    setSuccess(undefined);
 
     const emailArray = emails
       .split(",")
@@ -51,17 +68,7 @@ const AuthorPostCard = ({ content, onPublish }) => {
 
     try {
       const data = await getUserIds(emailArray);
-      if (data.errors && data.errors.length > 0) {
-        setError(data.errors.join(", "));
-        return;
-      }
-
-      const accessResponse = await grantAccess(data.userIds, content.id);
-      if (accessResponse.errors) {
-        setError(accessResponse.errors.join(", "));
-        return;
-      }
-
+      await grantAccess(data.userIds, content.id);
       setSuccess("Access granted successfully!");
       handleModalClose();
     } catch (error) {
@@ -73,7 +80,8 @@ const AuthorPostCard = ({ content, onPublish }) => {
     <div className="card shadow-sm">
       <img
         className="card-img-top"
-        src="https://images.theconversation.com/files/45159/original/rptgtpxd-1396254731.jpg?ixlib=rb-4.1.0&q=45&auto=format&w=1356&h=668&fit=crop"
+        height="250px"
+        src={`http://localhost:8000/storage/${content.cover_img}`}
         alt="Thumbnail"
       />
       <div className="card-body">

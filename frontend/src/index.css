@@ -1,27 +1,69 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+:root {
+  --primary-color: #172b4d;
+  --secondary-color: #0c66e4;
+  --heading-color: #44546f;
+}
+body {
+  font-family: "poppins" !important;
+}
+.logo {
+  color: var(--primary-color) !important;
+  font-size: 30px !important;
+}
+h1 {
+  color: var(--primary-color) !important;
+  text-align: center;
+  font-size: 50px !important;
+}
+.nav-item {
+  margin-right: 7px;
+  padding: 3px;
+  margin: 8px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.nav-link {
+  color: var(--heading-color) !important;
+}
+.nav-link:hover {
+  border-bottom: 2px solid var(--primary-color);
+  color: var(--primary-color) !important;
+}
+.nav-link:focus {
+  border-bottom: 2px solid var(--primary-color);
+}
 #root {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 .postCards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  border: none !important;
 }
 .author-img {
-    border-radius: 50%;
+  border-radius: 50%;
 }
 .custom-dropdown {
-    width: 400px;
-    overflow-y: auto;
+  width: 400px;
+  overflow-y: auto;
 }
 
 .custom-dropdown .dropdown-item {
-    min-height: 60px;
-    display: flex;
-    align-items: center;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
 }
 .dropdown-menu[data-bs-popper] {
-    right: 100px !important;
-    left: -336px !important;
+  right: 100px !important;
+  left: -336px !important;
+}
+input::placeholder {
+  color: var(--heading-color) !important;
+  font-size: 17px;
 }

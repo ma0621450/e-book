@@ -1,43 +1,51 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import HandleNotificationClick from "./handleNotificationClick";
+import HandleNotificationClick from "./HandleNotificationClick";
 import { useUser } from "../context/UserContext";
-import { logout } from "../api/api";
+import { fetchNotifications, logout } from "../api/Api";
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const { user, setUser, setAuthor } = useUser();
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<any[]>([]); // Update with actual type if known
 
   useEffect(() => {
     if (user?.role_id === 2) {
-      const fetchNotifications = async () => {
+      const getNotifications = async () => {
         try {
-          const response = await axios.get("/api/notifications");
-          setNotifications(response.data);
+          const data = await fetchNotifications();
+          setNotifications(data);
         } catch (error) {
           console.error("Error fetching notifications:", error);
         }
       };
 
-      fetchNotifications();
+      getNotifications();
     }
   }, [user]);
 
   const handleLogout = async () => {
-    await logout();
-    setUser(null);
-    setAuthor(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("author");
-    navigate("/login");
+    try {
+      await logout();
+      setUser(null);
+      setAuthor(null);
+      navigate("/login"); // Reuse the existing navigate
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
   };
 
   return (
-    <nav className="navbar navbar-expand-lg bg-body-tertiary">
+    <nav className="navbar navbar-expand-lg">
       <div className="container-fluid">
-        <a className="navbar-brand">Bookflix</a>
+        <img
+          width={"80px"}
+          src="https://cdn.dribbble.com/users/72227/screenshots/2609426/media/caf80c50b2b66ad641fe9f651bd6a2db.gif"
+          alt="Logo"
+        />
+        <a style={{ fontFamily: "cursive" }} className="navbar-brand logo">
+          Bookflix
+        </a>
         <button
           className="navbar-toggler"
           type="button"
@@ -119,7 +127,6 @@ const Navbar = () => {
               {user && user.role_id === 2 && (
                 <li className="nav-item">
                   <HandleNotificationClick
-                    className="border"
                     notifications={notifications}
                     setNotifications={setNotifications}
                   />

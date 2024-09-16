@@ -1,8 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { purchaseContent } from "../api/api"; // Use the separated API logic
+import { purchaseContent } from "../api/Api";
 
-const PurchaseModal = ({ isOpen, onClose, contentId }) => {
+interface PurchaseModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  contentId: string;
+}
+
+const PurchaseModal: React.FC<PurchaseModalProps> = ({
+  isOpen,
+  onClose,
+  contentId,
+}) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -23,8 +33,8 @@ const PurchaseModal = ({ isOpen, onClose, contentId }) => {
 
   return (
     <div
-      className="modal show"
-      style={{ display: "block" }}
+      className={`modal fade ${isOpen ? "show" : ""}`}
+      style={{ display: isOpen ? "block" : "none" }}
       aria-labelledby="modal-label"
       aria-hidden="true"
     >
@@ -37,6 +47,7 @@ const PurchaseModal = ({ isOpen, onClose, contentId }) => {
             <button
               type="button"
               className="btn-close"
+              aria-label="Close"
               onClick={onClose}
             ></button>
           </div>

@@ -8,28 +8,31 @@ export const router = {
   },
   content: {
     createContent: `${API_BASE_URL}/createContent`,
-    updateContent: (id) => `${API_BASE_URL}/updateContent/${id}`,
-    singlePost: (id) => `${API_BASE_URL}/post/${id}`,
+    updateContent: (id: string) => `${API_BASE_URL}/updateContent/${id}`,
+    singlePost: (id: string) => `${API_BASE_URL}/post/${id}`,
     fetchContent: `${API_BASE_URL}/content`,
     fetchPurchasedContent: `${API_BASE_URL}/purchased-content`,
     purchaseContent: `${API_BASE_URL}/purchase`,
-    togglePublish: (contentId) =>
+    togglePublish: (contentId: string) =>
       `${API_BASE_URL}/content/${contentId}/publish`,
-    fetchAuthorPosts: (id) => `${API_BASE_URL}/author/${id}/posts`,
+    fetchAuthorPosts: (id: string) => `${API_BASE_URL}/author/${id}/posts`,
+    checkUserPurchasedContent: (postId: number) =>
+      `${API_BASE_URL}/posts/${postId}/purchased`,
   },
   author: {
     editAuthorProfile: `${API_BASE_URL}/editBio`,
     fetchAuthorProfile: `${API_BASE_URL}/author-profile`,
     fetchAuthorPublications: `${API_BASE_URL}/publications`,
-    fetchAuthor_Profile: (id) => `${API_BASE_URL}/author/${id}`,
+    fetchAuthor_Profile: (id: string) => `${API_BASE_URL}/author/${id}`,
     grantAccess: `${API_BASE_URL}/grant-access`,
-    markNotificationRead: (id) =>
+    fetchNotifications: `${API_BASE_URL}/notifications`,
+    markNotificationRead: (id: string) =>
       `${API_BASE_URL}/notifications/${id}/mark-read`,
   },
   admin: {
-    blockUser: (id) => `${API_BASE_URL}/block-user/${id}`,
-    unblockUser: (id) => `${API_BASE_URL}/unblock-user/${id}`,
-    verifyAuthor: (id) => `${API_BASE_URL}/admin/verify-author/${id}`,
+    blockUser: (id: string) => `${API_BASE_URL}/block-user/${id}`,
+    unblockUser: (id: string) => `${API_BASE_URL}/unblock-user/${id}`,
+    verifyAuthor: (id: string) => `${API_BASE_URL}/admin/verify-author/${id}`,
     fetchAuthors: `${API_BASE_URL}/admin/authors`,
     getUserIds: `${API_BASE_URL}/get-user-ids`,
   },

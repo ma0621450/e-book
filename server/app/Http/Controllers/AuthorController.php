@@ -8,6 +8,7 @@ use App\Models\Notification;
 use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
+use Storage;
 use Validator;
 
 
@@ -21,11 +22,11 @@ class AuthorController extends Controller
             'title' => 'required|string|min:3|unique:contents',
             'body' => 'required|string|min:200',
             'type' => 'required|string|in:Article,Novel,Digest',
-            'price' => 'required|numeric'
+            'price' => 'required|numeric',
+            'cover_img' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $userId = Auth::id();
-
         $author = Author::where('user_id', $userId)->first();
 
         if (!$author) {
@@ -44,9 +45,14 @@ class AuthorController extends Controller
             'is_published' => false,
         ]);
 
+        if ($request->hasFile('cover_img')) {
+            $coverImagePath = $request->file('cover_img')->store('cover_images', 'public');
+            $content->cover_img = $coverImagePath;
+            $content->save();
+        }
+
         return response()->json(['message' => 'Content created successfully', 'content' => $content], 201);
     }
-
 
     public function updateContent(Request $request, $id)
     {
@@ -55,16 +61,25 @@ class AuthorController extends Controller
             'body' => 'required|string',
             'type' => 'required|string|in:Article,Digest,Novel',
             'price' => 'required|numeric|min:0',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         try {
             $content = Content::findOrFail($id);
 
-            // Update content fields
             $content->title = $request->input('title');
             $content->body = $request->input('body');
             $content->type = $request->input('type');
             $content->price = $request->input('price');
+
+            if ($request->hasFile('cover_image')) {
+                if ($content->cover_image) {
+                    Storage::disk('public')->delete($content->cover_image);
+                }
+
+                $coverImagePath = $request->file('cover_image')->store('cover_images', 'public');
+                $content->cover_image = $coverImagePath;
+            }
 
             $content->save();
 
@@ -80,23 +95,39 @@ class AuthorController extends Controller
         }
     }
 
+
     public function editBio(Request $request)
     {
         $request->validate([
-            'bio' => 'required|string|min:200'
+            'bio' => 'required|string|min:200',
+            'pfp' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $user = Auth::user();
-
         $author = Author::where('user_id', $user->id)->first();
 
         if ($author) {
             $author->bio = $request->bio;
-            $author->save();
 
+            if ($request->hasFile('pfp')) {
+                if ($author->pfp) {
+                    Storage::disk('public')->delete($author->pfp);
+                }
+
+                $pfpPath = $request->file('pfp')->store('profile_photos', 'public');
+                $author->pfp = $pfpPath;
+            }
+
+            $author->save();
         }
-        return response()->json(['message' => 'Bio updated successfully', 'bio' => $author->bio], 200);
+
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'bio' => $author->bio,
+            'pfp' => $author->pfp
+        ], 200);
     }
+
 
     public function getAuthorProfile()
     {

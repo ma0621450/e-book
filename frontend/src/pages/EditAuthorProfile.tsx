@@ -1,37 +1,52 @@
 import React, { useRef, useState, useEffect } from "react";
-import { fetchAuthorProfile, updateBio } from "../api/api";
+import { fetchAuthorProfile, updateBioAndPfp } from "../api/Api";
 
 const EditAuthorProfile = () => {
-  const [errors, setErrors] = useState([]);
-  const [success, setSuccess] = useState("");
-  const bioRef = useRef();
-  const [isVerified, setIsVerified] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [success, setSuccess] = useState<string>("");
+  const bioRef = useRef<HTMLTextAreaElement>(null);
+  const pfpRef = useRef<HTMLInputElement>(null); // Added reference for profile picture
+  const [isVerified, setIsVerified] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const profileData = await fetchAuthorProfile();
         setIsVerified(profileData.is_verified);
-        bioRef.current.value = profileData.bio;
+        if (bioRef.current) {
+          bioRef.current.value = profileData.bio;
+        }
       } catch (error) {
-        setErrors([error.message]);
+        setErrors([
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred.",
+        ]);
       }
     };
 
     fetchProfile();
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSuccess("");
     setErrors([]);
-    const bio = bioRef.current.value;
+    const bio = bioRef.current?.value || "";
+    const pfp = pfpRef.current?.files?.[0] || null; // Handle file input
 
     try {
-      await updateBio(bio);
+      await updateBioAndPfp(bio, pfp); // Ensure the API function handles both bio and profile picture
       setSuccess("Bio Updated");
+      if (!isVerified) {
+        setSuccess("Your request for verification has been sent successfully");
+      }
     } catch (error) {
-      setErrors([error.message]);
+      setErrors([
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred.",
+      ]);
     }
   };
 
@@ -54,11 +69,17 @@ const EditAuthorProfile = () => {
           </div>
         )}
         <div className="mb-3">
+          <label htmlFor="pfp" className="form-label">
+            Profile Picture
+          </label>
+          <input type="file" className="form-control" id="pfp" ref={pfpRef} />
+        </div>
+        <div className="mb-3">
           <label htmlFor="bio" className="form-label">
             Your Biography
           </label>
           <textarea
-            rows="8"
+            rows={8}
             className="form-control"
             id="bio"
             name="bio"

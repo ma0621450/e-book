@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist" /* This specifies where compiled files should be stored */,
+    "allowJs": true /* Allow JavaScript files in the project */,
+    "jsx": "react-jsx",
+    "target": "ES2019",
+    "lib": ["ES2019", "DOM"],
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

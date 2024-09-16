@@ -1,34 +1,47 @@
 import React, { useRef, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../context/UserContext";
-import { loginUser } from "../api/api";
+import { loginUser } from "../api/Api";
 import {
   getRoleBasedRoute,
   removeAuthorFromLocalStorage,
   saveUserToLocalStorage,
 } from "../api/utils";
 
+interface FormValues {
+  email: string;
+  password: string;
+}
+
 const Login = () => {
-  const [errors, setErrors] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const emailRef = useRef();
-  const passwordRef = useRef();
+  const [errors, setErrors] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, setUser, setAuthor } = useUser();
+  const from = (location.state as any)?.from?.pathname || "/";
 
-  // useEffect(() => {
-  //   if (user) {
-  //     navigate(getRoleBasedRoute(user.role_id));
-  //   }
-  // }, [user, navigate]);
+  useEffect(() => {
+    if (user) {
+      navigate(from, { replace: true });
+    }
+  }, [user, from, navigate]);
 
-  const handleSubmit = async (e) => {
+  useEffect(() => {
+    if (user) {
+      navigate(getRoleBasedRoute(user.role_id));
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setErrors([]);
 
-    const email = emailRef.current.value.trim();
-    const password = passwordRef.current.value.trim();
+    const email = emailRef.current?.value.trim() || "";
+    const password = passwordRef.current?.value.trim() || "";
 
     try {
       const { user, author } = await loginUser(email, password);
@@ -45,7 +58,11 @@ const Login = () => {
 
       navigate(getRoleBasedRoute(user.role_id));
     } catch (error) {
-      setErrors([error.message]);
+      if (error instanceof Error) {
+        setErrors([error.message]);
+      } else {
+        setErrors(["An unexpected error occurred"]);
+      }
     } finally {
       setLoading(false);
     }
@@ -54,7 +71,7 @@ const Login = () => {
   return (
     <section className="login-form">
       <form
-        className="border border-1 w-50 mx-auto p-3 m-4"
+        className="border border-1 rounded w-50 mx-auto p-3 m-4"
         onSubmit={handleSubmit}
       >
         {errors.length > 0 && (

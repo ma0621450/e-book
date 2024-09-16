@@ -1,30 +1,40 @@
 import React, { useRef, useState, useEffect } from "react";
-import { fetchPost, saveContent } from "../api/api";
+import { useParams } from "react-router-dom";
+import { fetchPostbyId, saveContent } from "../api/Api";
+
+interface Post {
+  title: string;
+  body: string;
+  type: string;
+  price: string;
+}
 
 const PublishForm = () => {
-  const { id } = useParams();
-  const [contentId, setContentId] = useState(null);
-  const [errors, setErrors] = useState([]);
-  const [success, setSuccess] = useState("");
-  const [post, setPost] = useState(null);
+  const { id } = useParams<string>();
+  const [contentId, setContentId] = useState<number | null>(null);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [success, setSuccess] = useState<string>("");
+  const [post, setPost] = useState<Post | null>(null);
 
   const refs = {
-    title: useRef(),
-    body: useRef(),
-    contentType: useRef(),
-    price: useRef(),
+    title: useRef<HTMLInputElement>(null),
+    body: useRef<HTMLTextAreaElement>(null),
+    contentType: useRef<HTMLSelectElement>(null),
+    price: useRef<HTMLInputElement>(null),
+    coverImage: useRef<HTMLInputElement>(null),
   };
 
   useEffect(() => {
     if (id) {
       const fetchPostData = async () => {
         try {
-          const post = await fetchPost(id);
+          const post = await fetchPostbyId(id);
           setPost(post);
-          refs.title.current.value = post.title;
-          refs.body.current.value = post.body;
-          refs.contentType.current.value = post.type;
-          refs.price.current.value = post.price;
+          if (refs.title.current) refs.title.current.value = post.title;
+          if (refs.body.current) refs.body.current.value = post.body;
+          if (refs.contentType.current)
+            refs.contentType.current.value = post.type;
+          if (refs.price.current) refs.price.current.value = post.price;
         } catch (error) {
           console.error("Error fetching post for editing:", error);
         }
@@ -34,8 +44,20 @@ const PublishForm = () => {
     }
   }, [id]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (
+      !refs.title.current ||
+      !refs.body.current ||
+      !refs.contentType.current ||
+      !refs.price.current ||
+      !refs.coverImage.current
+    ) {
+      setErrors(["All Form Fields are required."]);
+      return;
+    }
+
     const content = {
       title: refs.title.current.value,
       body: refs.body.current.value,
@@ -43,15 +65,37 @@ const PublishForm = () => {
       price: refs.price.current.value,
     };
 
+    const formData = new FormData();
+    formData.append("title", content.title);
+    formData.append("body", content.body);
+    formData.append("type", content.type);
+    formData.append("price", content.price);
+    if (refs.coverImage.current.files && refs.coverImage.current.files[0]) {
+      const file = refs.coverImage.current.files[0];
+      if (!["image/jpeg", "image/png"].includes(file.type)) {
+        setErrors(["Please upload a valid image (JPEG or PNG)."]);
+        return;
+      }
+      formData.append("cover_img", file);
+    }
+
     try {
-      const response = await saveContent(id, content);
-      setContentId(response.data.content.id);
-      setSuccess(
-        id ? "Content updated successfully!" : "Content created successfully!"
-      );
+      const response = await saveContent(id, formData);
+      if (response?.data?.content?.id) {
+        setContentId(response.data.content.id);
+        setSuccess(
+          id ? "Content updated successfully!" : "Content created successfully!"
+        );
+      } else {
+        setErrors(["Unexpected response format."]);
+      }
       setErrors([]);
     } catch (error) {
-      setErrors([error.message || "An unexpected error occurred."]);
+      if (error instanceof Error) {
+        setErrors([error.message]);
+      } else {
+        setErrors(["An unexpected error occurred."]);
+      }
     }
   };
 
@@ -60,6 +104,7 @@ const PublishForm = () => {
       <form
         className="border border-1 w-50 mx-auto p-3 m-4"
         onSubmit={handleSubmit}
+        encType="multipart/form-data"
       >
         {success && (
           <div className="alert alert-success mx-auto mt-4">{success}</div>
@@ -124,6 +169,18 @@ const PublishForm = () => {
             step="0.01"
             name="price"
             ref={refs.price}
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="coverImage" className="form-label">
+            Cover Image
+          </label>
+          <input
+            type="file"
+            className="form-control"
+            id="coverImage"
+            name="cover_img"
+            ref={refs.coverImage}
           />
         </div>
         <button type="submit" className="btn btn-primary">

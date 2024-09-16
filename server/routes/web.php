@@ -17,11 +17,14 @@ Route::middleware('checkRole:1')->group(function () {
     Route::get('/content', [UserController::class, 'getPublishedContent']);
     Route::post('/purchase', [UserController::class, 'purchaseContent']);
     Route::get('/purchased-content', [UserController::class, 'getPurchasedContent']);
+    // routes/api.php
+
 });
 
 //author role_id : 2
 Route::middleware('checkRole:2')->group(function () {
     Route::post('/createContent', [AuthorController::class, 'createContent']);
+    Route::put('/updateContent/{id}', [AuthorController::class, 'updateContent']);
     Route::get('/publications', [AuthorController::class, 'getMyContent']);
     Route::patch('/content/{id}/publish', [AuthorController::class, 'ispublished']);
     Route::post('/get-user-ids', [AuthorController::class, 'getUserIds']);
@@ -29,7 +32,6 @@ Route::middleware('checkRole:2')->group(function () {
     Route::post('/editBio', [AuthorController::class, 'editBio']);
     Route::get('/notifications', [AuthorController::class, 'getNotifications']);
     Route::patch('/notifications/{id}/mark-read', [AuthorController::class, 'markAsRead']);
-    Route::put('/updateContent/{id}', [AuthorController::class, 'updateContent']);
 });
 
 //admin role_id : 3
@@ -45,3 +47,4 @@ Route::get('/post/{id}', [UserController::class, 'getSinglePost']);
 Route::get('/author-profile', [AuthorController::class, 'getAuthorProfile']);
 Route::get('/author/{id}/posts', [Controller::class, 'getAuthorPosts']);
 Route::get('/author/{id}', [Controller::class, 'getSingleAuthorProfile']);
+Route::get('/posts/{postId}/purchased', [UserController::class, 'hasPurchased']);
