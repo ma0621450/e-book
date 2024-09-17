@@ -5,7 +5,7 @@ const EditAuthorProfile = () => {
   const [errors, setErrors] = useState<string[]>([]);
   const [success, setSuccess] = useState<string>("");
   const bioRef = useRef<HTMLTextAreaElement>(null);
-  const pfpRef = useRef<HTMLInputElement>(null); // Added reference for profile picture
+  const pfpRef = useRef<HTMLInputElement>(null);
   const [isVerified, setIsVerified] = useState<boolean>(false);
 
   useEffect(() => {
@@ -33,14 +33,15 @@ const EditAuthorProfile = () => {
     setSuccess("");
     setErrors([]);
     const bio = bioRef.current?.value || "";
-    const pfp = pfpRef.current?.files?.[0] || null; // Handle file input
+    const pfp = pfpRef.current?.files?.[0] || null;
 
     try {
-      await updateBioAndPfp(bio, pfp); // Ensure the API function handles both bio and profile picture
-      setSuccess("Bio Updated");
-      if (!isVerified) {
-        setSuccess("Your request for verification has been sent successfully");
-      }
+      await updateBioAndPfp(bio, pfp);
+      setSuccess(
+        isVerified
+          ? "Bio Updated"
+          : "Your request for verification has been sent successfully."
+      );
     } catch (error) {
       setErrors([
         error instanceof Error

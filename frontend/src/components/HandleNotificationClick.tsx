@@ -42,7 +42,7 @@ const HandleNotificationClick: React.FC<HandleNotificationClickProps> = ({
         className="dropdown-menu custom-dropdown"
         aria-labelledby="notificationDropdown"
       >
-        {notifications.length === 0 ? (
+        {!Array.isArray(notifications) || notifications.length === 0 ? (
           <li>No notifications</li>
         ) : (
           notifications.map((notification) => (

@@ -1,18 +1,10 @@
-// Library.tsx
 import React, { useEffect, useState } from "react";
 import { fetchPurchasedContent } from "../api/Api";
 import PostCard from "../components/PostCard";
 import LoadingSpinner from "../components/LoadingSpinner";
 import SearchBar from "../components/SearchBar";
+import { Post } from "../interfaces";
 
-interface Post {
-  id: number;
-  title: string;
-  type: string;
-  price: number;
-  cover_img: string;
-  author?: any;
-}
 const Library = () => {
   const [purchasedContent, setPurchasedContent] = useState<Post[]>([]);
   const [filteredContent, setFilteredContent] = useState<Post[]>([]);
@@ -64,6 +56,14 @@ const Library = () => {
     return <LoadingSpinner />;
   }
 
+  if (error) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        {error}
+      </div>
+    );
+  }
+
   return (
     <section className="library">
       <div className="container mt-4">
@@ -82,7 +82,7 @@ const Library = () => {
               </div>
             ))
           ) : (
-            <p>No content found.</p>
+            <p>Buy content first to view.</p>
           )}
         </div>
       </div>

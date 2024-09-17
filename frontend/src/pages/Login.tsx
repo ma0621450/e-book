@@ -2,18 +2,14 @@ import React, { useRef, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { loginUser } from "../api/Api";
+import { FormValues } from "../interfaces";
 import {
   getRoleBasedRoute,
   removeAuthorFromLocalStorage,
   saveUserToLocalStorage,
 } from "../api/utils";
 
-interface FormValues {
-  email: string;
-  password: string;
-}
-
-const Login = () => {
+const Login: React.FC = () => {
   const [errors, setErrors] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -29,12 +25,6 @@ const Login = () => {
     }
   }, [user, from, navigate]);
 
-  useEffect(() => {
-    if (user) {
-      navigate(getRoleBasedRoute(user.role_id));
-    }
-  }, [user, navigate]);
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -43,14 +33,20 @@ const Login = () => {
     const email = emailRef.current?.value.trim() || "";
     const password = passwordRef.current?.value.trim() || "";
 
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+
     try {
-      const { user, author } = await loginUser(email, password);
-      if (!user) throw new Error("User data is missing from response");
+      const response = await loginUser(formData);
+      const { user, author } = response;
+
+      if (!user) throw new Error("User Data is missing from response.");
 
       setUser(user);
-      setAuthor(author || null);
+      setAuthor(author);
 
-      saveUserToLocalStorage(user, author);
+      saveUserToLocalStorage(user, author || null);
 
       if (!author) {
         removeAuthorFromLocalStorage();
@@ -76,11 +72,11 @@ const Login = () => {
       >
         {errors.length > 0 && (
           <div className="alert alert-danger mx-auto mt-4">
-            <ul className="mb-0">
-              {errors.map((error, index) => (
-                <li key={index}>{error}</li>
-              ))}
-            </ul>
+            {errors.map((error, index) => (
+              <p style={{ whiteSpace: "pre-line" }} key={index}>
+                {error}
+              </p>
+            ))}
           </div>
         )}
         <div className="mb-3">

@@ -1,13 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../api/Api";
-
-interface FormValues {
-  email: string;
-  username: string;
-  password: string;
-  role: string;
-}
+import { FormValues } from "../interfaces";
 
 const Register: React.FC = () => {
   const formRef = useRef<HTMLFormElement>(null);
@@ -19,23 +13,24 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors([]);
+    setSuccess("");
     setLoading(true);
 
     if (formRef.current) {
       const formData = new FormData(formRef.current);
 
       try {
-        await registerUser(formData);
+        const response = await registerUser(formData);
         setSuccess("User created successfully!");
-        setLoading(false);
         navigate("/login");
       } catch (error) {
-        setLoading(false);
         setErrors([
           error instanceof Error
             ? error.message
-            : "An unexpected error occurred",
+            : "An unexpected error occurred.",
         ]);
+      } finally {
+        setLoading(false);
       }
     } else {
       setLoading(false);
@@ -55,11 +50,11 @@ const Register: React.FC = () => {
         )}
         {errors.length > 0 && (
           <div className="alert alert-danger mx-auto mt-4">
-            <ul className="mb-0">
-              {errors.map((error, index) => (
-                <li key={index}>{error}</li>
-              ))}
-            </ul>
+            {errors.map((error, index) => (
+              <p style={{ whiteSpace: "pre-line" }} key={index}>
+                {error}
+              </p>
+            ))}
           </div>
         )}
         <div className="mb-3">

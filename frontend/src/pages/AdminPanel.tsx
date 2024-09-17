@@ -2,19 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchAuthors, verifyAuthor, blockUnblockUser } from "../api/Api";
 import SearchBar from "../components/SearchBar";
-
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  deleted_at: string | null;
-}
-
-interface Author {
-  id: string;
-  user: User;
-  is_verified: boolean;
-}
+import { User, Author } from "../interfaces";
 
 const AdminPanel: React.FC = () => {
   const [authors, setAuthors] = useState<Author[]>([]);
@@ -33,7 +21,7 @@ const AdminPanel: React.FC = () => {
       try {
         const authorData = await fetchAuthors();
         setAuthors(authorData);
-        setFilteredAuthors(authorData); // Initially set filteredAuthors to all authors
+        setFilteredAuthors(authorData);
       } catch (error) {
         console.error(error);
         setError("Failed to fetch authors.");
@@ -60,7 +48,7 @@ const AdminPanel: React.FC = () => {
 
   const handleVerify = async (id: string) => {
     try {
-      await verifyAuthor(id); // Assuming verifyAuthor takes only one argument
+      await verifyAuthor(id);
       setAuthors(
         authors.map((author) =>
           author.id === id ? { ...author, is_verified: true } : author
@@ -74,7 +62,7 @@ const AdminPanel: React.FC = () => {
 
   const handleBlockUnblock = async (id: string, isBlocked: boolean) => {
     try {
-      await blockUnblockUser(id, isBlocked); // Assuming blockUnblockUser takes only two arguments
+      await blockUnblockUser(id, isBlocked);
       setAuthors(
         authors.map((author) =>
           author.user.id === id

@@ -1,56 +1,58 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useUser } from "../context/UserContext";
-import { fetchPostbyId } from "../api/Api";
+import { fetchPostById } from "../api/Api";
 import { LoadingSpinner } from "./LoadingSpinner";
-
-interface PostAuthor {
-  id: number;
-  user: {
-    username: string;
-  };
-  bio: string;
-}
-
-interface Post {
-  id: number;
-  title: string;
-  body: string;
-  author: PostAuthor;
-}
+import { Post as PostType } from "../interfaces";
 
 const Post: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useUser();
-  const [post, setPost] = useState<Post | null>(null);
+  const [post, setPost] = useState<PostType | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchPost = async () => {
       if (!id) {
         setError("Post ID is missing.");
+        setLoading(false);
         return;
       }
 
       try {
-        const response = await fetchPostbyId(id);
-        setPost(response);
+        const postData = await fetchPostById(id);
+        setPost(postData);
       } catch (error) {
-        console.error("Error fetching post:", error);
-        setError("Failed to load post.");
+        setError(
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred."
+        );
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchPost();
   }, [id]);
 
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
   if (error) {
-    return <p>{error}</p>;
+    return <p className="alert alert-danger">{error}</p>;
   }
 
   if (!post) {
-    return <LoadingSpinner />;
+    return <p className="alert alert-warning">No post found.</p>;
   }
+
+  const author = post.author;
+  const authorUsername = author?.user?.username || "Unknown";
+  const authorBio = author?.bio || "No bio available";
+  const authorId = author?.id;
 
   return (
     <div className="post">
@@ -71,18 +73,20 @@ const Post: React.FC = () => {
             <div className="d-flex flex-column">
               <p>
                 <b>Author: </b>
-                <span>{post.author.user.username}</span>
+                <span>{authorUsername}</span>
               </p>
               <p>
                 <b>Author Bio: </b>
-                <span className="">{post.author.bio}</span>
+                <span>{authorBio}</span>
               </p>
-              <Link
-                to={`/author/profile/${post.author.id}`}
-                className="btn btn-primary mt-auto"
-              >
-                View Author's Profile
-              </Link>
+              {authorId && (
+                <Link
+                  to={`/author/profile/${authorId}`}
+                  className="btn btn-primary mt-auto"
+                >
+                  View Author's Profile
+                </Link>
+              )}
               {user && user.role_id === 2 && (
                 <Link
                   to={`/author/publish/edit/${post.id}`}

@@ -2,17 +2,10 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import GrantAccessModal from "./GrantAccessModal";
 import { togglePublish, getUserIds, grantAccess } from "../api/Api";
-
-interface Content {
-  id: number;
-  cover_img: string;
-  title: string;
-  type: string;
-  is_published: boolean;
-}
+import { Post } from "../interfaces";
 
 interface AuthorPostCardProps {
-  content: Content;
+  content: Post;
   onPublish: (id: number) => void;
 }
 

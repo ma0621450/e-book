@@ -1,16 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-
-interface User {
-  id: string;
-  name: string;
-  role_id: number;
-}
-
-interface Author {
-  id: string;
-  name: string;
-  is_verified: boolean;
-}
+import { User, Author, Post, AuthorProfile } from "../interfaces";
 
 interface UserContextType {
   user: User | null;

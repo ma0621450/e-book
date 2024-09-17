@@ -2,10 +2,10 @@ import React from "react";
 import { IoIosSearch } from "react-icons/io";
 
 interface SearchBarProps {
-  onSearch: (query: string) => void; // Callback function to handle search
-  query: string; // Search query
-  setQuery: React.Dispatch<React.SetStateAction<string>>; // Function to update query
-  placeholder?: string; // Optional placeholder text
+  onSearch: (query: string) => void;
+  query: string;
+  setQuery: React.Dispatch<React.SetStateAction<string>>;
+  placeholder?: string;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({

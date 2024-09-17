@@ -1,34 +1,14 @@
-// components/AuthorProfilePage.tsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useUser } from "../context/UserContext";
+import { AuthorProfile, Post } from "../interfaces";
 import {
   fetchAuthorPosts,
   fetchAuthorProfileById,
   checkPostPurchased,
 } from "../api/Api";
-import { useUser } from "../context/UserContext";
-
-interface AuthorProfile {
-  bio: string;
-  is_verified: boolean;
-  pfp: string;
-}
-
-interface Post {
-  id: number;
-  title: string;
-  cover_img: string;
-  type: string;
-  price: number;
-  author?: {
-    user?: {
-      username?: string;
-    };
-  };
-  hasPurchased?: boolean;
-}
 
 const AuthorProfilePage: React.FC = () => {
   const { user } = useUser();

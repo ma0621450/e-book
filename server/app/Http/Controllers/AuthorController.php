@@ -98,16 +98,17 @@ class AuthorController extends Controller
 
     public function editBio(Request $request)
     {
-        $request->validate([
-            'bio' => 'required|string|min:200',
-            'pfp' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
         $user = Auth::user();
         $author = Author::where('user_id', $user->id)->first();
+        $request->validate([
+            'bio' => $author && $author->bio ? 'sometimes|string|min:200' : 'required|string|min:200',
+            'pfp' => $author && $author->pfp ? 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048' : 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
         if ($author) {
-            $author->bio = $request->bio;
+            if ($request->has('bio')) {
+                $author->bio = $request->bio;
+            }
 
             if ($request->hasFile('pfp')) {
                 if ($author->pfp) {
@@ -124,7 +125,7 @@ class AuthorController extends Controller
         return response()->json([
             'message' => 'Profile updated successfully',
             'bio' => $author->bio,
-            'pfp' => $author->pfp
+            'pfp' => $author->pfp,
         ], 200);
     }
 

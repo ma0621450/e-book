@@ -3,34 +3,13 @@ import PostCard from "../components/PostCard";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { fetchContent } from "../api/Api";
 import SearchBar from "../components/SearchBar";
-
-interface User {
-  username: string;
-}
-
-interface Author {
-  user: User;
-}
-
-interface Post {
-  id: number;
-  title: string;
-  type: string;
-  author?: Author;
-  price: number;
-  cover_img: string;
-}
-
-interface PaginatedResponse<T> {
-  data: T[];
-  current_page: number;
-  last_page: number;
-}
+import { Post, PaginatedResponse } from "../interfaces";
 
 const Home = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [lastPage, setLastPage] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -38,6 +17,7 @@ const Home = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
+      setError(null); // Reset error before fetching
       try {
         const response: PaginatedResponse<Post> = await fetchContent(
           currentPage
@@ -47,6 +27,7 @@ const Home = () => {
         setCurrentPage(response.current_page);
         setLastPage(response.last_page);
       } catch (error) {
+        setError("Failed to fetch posts. Please try again later.");
         console.error("Error fetching posts:", error);
       } finally {
         setLoading(false);
@@ -94,6 +75,10 @@ const Home = () => {
 
   if (loading) {
     return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return <div className="alert alert-danger">{error}</div>;
   }
 
   return (

@@ -2,17 +2,10 @@ import React, { useEffect, useState } from "react";
 import AuthorPostCard from "../components/AuthorPostCard";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { fetchAuthorPublications } from "../api/Api";
-
-interface ContentItem {
-  title: string;
-  type: string;
-  id: number;
-  cover_img: string;
-  is_published: boolean;
-}
+import { Post } from "../interfaces";
 
 const AuthorPublications: React.FC = () => {
-  const [content, setContent] = useState<ContentItem[]>([]);
+  const [content, setContent] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,7 +37,7 @@ const AuthorPublications: React.FC = () => {
   }
 
   if (error) {
-    return <h4 className="text-center">{error}</h4>;
+    return <h4 className="text-center text-danger">{error}</h4>;
   }
 
   if (content.length === 0) {

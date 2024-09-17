@@ -7,7 +7,7 @@ import { fetchNotifications, logout } from "../api/Api";
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const { user, setUser, setAuthor } = useUser();
-  const [notifications, setNotifications] = useState<any[]>([]); // Update with actual type if known
+  const [notifications, setNotifications] = useState<any[]>([]);
 
   useEffect(() => {
     if (user?.role_id === 2) {
@@ -123,9 +123,9 @@ const Navbar: React.FC = () => {
             )}
           </ul>
           <div className="d-flex">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+            <ul className="navbar-nav">
               {user && user.role_id === 2 && (
-                <li className="nav-item">
+                <li className="px-2">
                   <HandleNotificationClick
                     notifications={notifications}
                     setNotifications={setNotifications}

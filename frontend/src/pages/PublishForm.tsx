@@ -1,13 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { fetchPostbyId, saveContent } from "../api/Api";
-
-interface Post {
-  title: string;
-  body: string;
-  type: string;
-  price: string;
-}
+import { fetchPostById, saveContent } from "../api/Api";
+import { Post } from "../interfaces";
 
 const PublishForm = () => {
   const { id } = useParams<string>();
@@ -28,13 +22,14 @@ const PublishForm = () => {
     if (id) {
       const fetchPostData = async () => {
         try {
-          const post = await fetchPostbyId(id);
+          const post = await fetchPostById(id);
           setPost(post);
           if (refs.title.current) refs.title.current.value = post.title;
-          if (refs.body.current) refs.body.current.value = post.body;
+          if (refs.body.current) refs.body.current.value = post.body || "";
           if (refs.contentType.current)
             refs.contentType.current.value = post.type;
-          if (refs.price.current) refs.price.current.value = post.price;
+          if (refs.price.current)
+            refs.price.current.value = post.price.toString();
         } catch (error) {
           console.error("Error fetching post for editing:", error);
         }
@@ -54,7 +49,7 @@ const PublishForm = () => {
       !refs.price.current ||
       !refs.coverImage.current
     ) {
-      setErrors(["All Form Fields are required."]);
+      setErrors(["All form fields are required."]);
       return;
     }
 
@@ -80,15 +75,10 @@ const PublishForm = () => {
     }
 
     try {
-      const response = await saveContent(id, formData);
-      if (response?.data?.content?.id) {
-        setContentId(response.data.content.id);
-        setSuccess(
-          id ? "Content updated successfully!" : "Content created successfully!"
-        );
-      } else {
-        setErrors(["Unexpected response format."]);
-      }
+      await saveContent(id || null, formData);
+      setSuccess(
+        id ? "Content updated successfully!" : "Content created successfully!"
+      );
       setErrors([]);
     } catch (error) {
       if (error instanceof Error) {
@@ -111,11 +101,11 @@ const PublishForm = () => {
         )}
         {errors.length > 0 && (
           <div className="alert alert-danger mx-auto mt-4">
-            <ul className="mb-0">
-              {errors.map((error, index) => (
-                <li key={index}>{error}</li>
-              ))}
-            </ul>
+            {errors.map((error, index) => (
+              <p style={{ whiteSpace: "pre-line" }} key={index}>
+                {error}
+              </p>
+            ))}
           </div>
         )}
         <div className="mb-3">
