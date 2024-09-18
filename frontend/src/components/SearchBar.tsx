@@ -1,12 +1,6 @@
 import React from "react";
 import { IoIosSearch } from "react-icons/io";
-
-interface SearchBarProps {
-  onSearch: (query: string) => void;
-  query: string;
-  setQuery: React.Dispatch<React.SetStateAction<string>>;
-  placeholder?: string;
-}
+import { SearchBarProps } from "../interfaces";
 
 const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,

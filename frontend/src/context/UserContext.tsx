@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { User, Author, Post, AuthorProfile } from "../interfaces";
-
-interface UserContextType {
-  user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
-  author: Author | null;
-  setAuthor: React.Dispatch<React.SetStateAction<Author | null>>;
-}
+import {
+  User,
+  Author,
+  Post,
+  AuthorProfile,
+  UserProviderProps,
+  UserContextType,
+} from "../interfaces";
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
@@ -17,10 +17,6 @@ export const useUser = (): UserContextType => {
   }
   return context;
 };
-
-interface UserProviderProps {
-  children: React.ReactNode;
-}
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);

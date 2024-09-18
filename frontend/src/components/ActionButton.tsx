@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import PurchaseModal from "./PurchaseModal";
-
-interface ActionButtonProps {
-  postId: number;
-  hasPurchased: boolean;
-}
+import { ActionButtonProps } from "../interfaces";
 
 const ActionButton: React.FC<ActionButtonProps> = ({
   postId,

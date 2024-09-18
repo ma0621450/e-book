@@ -1,14 +1,5 @@
 import React from "react";
-
-interface GrantAccessModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  emails: string;
-  setEmails: React.Dispatch<React.SetStateAction<string>>;
-  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-  error?: string;
-  success?: string;
-}
+import { GrantAccessModalProps } from "../interfaces";
 
 const GrantAccessModal: React.FC<GrantAccessModalProps> = ({
   isOpen,

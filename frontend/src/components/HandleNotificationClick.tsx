@@ -1,16 +1,7 @@
 import React from "react";
 import { IoNotifications } from "react-icons/io5";
 import { markNotificationAsRead } from "../api/Api";
-
-interface Notification {
-  id: number;
-  message: string;
-}
-
-interface HandleNotificationClickProps {
-  notifications: Notification[];
-  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
-}
+import { HandleNotificationClickProps } from "../interfaces";
 
 const HandleNotificationClick: React.FC<HandleNotificationClickProps> = ({
   notifications,

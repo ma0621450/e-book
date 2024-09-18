@@ -2,12 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import GrantAccessModal from "./GrantAccessModal";
 import { togglePublish, getUserIds, grantAccess } from "../api/Api";
-import { Post } from "../interfaces";
-
-interface AuthorPostCardProps {
-  content: Post;
-  onPublish: (id: number) => void;
-}
+import { AuthorPostCardProps, Post } from "../interfaces";
 
 const AuthorPostCard: React.FC<AuthorPostCardProps> = ({
   content,

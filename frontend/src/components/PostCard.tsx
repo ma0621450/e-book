@@ -1,10 +1,6 @@
 import React from "react";
 import ActionButton from "./ActionButton";
-import { Post } from "../interfaces";
-
-interface PostCardProps {
-  post: Post;
-}
+import { Post, PostCardProps } from "../interfaces";
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const authorName = post?.author?.user?.username;

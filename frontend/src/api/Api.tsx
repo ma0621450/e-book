@@ -285,7 +285,7 @@ export const markNotificationAsRead = async (id: string): Promise<void> => {
 };
 
 // Toggle publish
-export const togglePublish = async (contentId: string): Promise<void> => {
+export const togglePublish = async (contentId: any): Promise<void> => {
   const response = await apiRequest<any>(
     router.content.togglePublish(contentId),
     "patch"

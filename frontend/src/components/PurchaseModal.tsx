@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { purchaseContent } from "../api/Api";
-
-interface PurchaseModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  contentId: string;
-}
+import { PurchaseModalProps } from "../interfaces";
 
 const PurchaseModal: React.FC<PurchaseModalProps> = ({
   isOpen,

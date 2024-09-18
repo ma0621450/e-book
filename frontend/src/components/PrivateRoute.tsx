@@ -1,11 +1,7 @@
 import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
-
-interface PrivateRouteProps {
-  role: number | number[];
-  children?: React.ReactNode;
-}
+import { PrivateRouteProps } from "../interfaces";
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ role, children }) => {
   const { user, author } = useUser();
